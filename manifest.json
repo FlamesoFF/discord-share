@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "name": "Discord Share",
+  "version": "1.0",
+  "description": "Share web content to Discord!",
+  "icons": {
+    "48": "assets/discord.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "options_ui": {
+    "chrome_style": false,
+    "page": "options/options.html"
+  },
+  "permissions": [
+    "contextMenus",
+    "tabs",
+    "storage",
+
+    "https://discordapp.com/api/*"
+  ],
+  "web_accessible_resources": [
+    "assets/*"
+  ]
+}
