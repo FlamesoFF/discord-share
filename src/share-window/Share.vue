@@ -2,7 +2,7 @@
   <v-app>
     <v-content>
       <v-container fluid>
-        <h1>Share to Discord</h1>
+        <h1 class="display-1 pb-2">Share to Discord</h1>
 
         <!-- Info -->
         <v-card>
@@ -54,29 +54,30 @@
         </v-combobox>
 
         <v-btn color="success" @click="send">Share</v-btn>
-        <v-btn color="success" @click="alert">test alert</v-btn>
-      </v-container>
+        <v-btn color="success" @click="showAlert('test', 'info')">test alert</v-btn>
 
-      <v-alert :value="alert.value" v-model="alert.model" type="alert.type"></v-alert>
+        <v-alert v-model="alert.model" :type="alert.type">Alert: {{alert.value}}</v-alert>
+      </v-container>
     </v-content>
   </v-app>
 </template>
 
 <script>
 import API from "../api/api";
+import { setTimeout } from "timers";
 
 export default {
   name: "App",
 
   data: () => ({
-    webhook: "",
+    webhook: undefined,
     webhooks: [],
     comment: "",
     alert: {
       model: undefined,
       active: false,
-      value: '',
-      type: 'success'
+      value: "",
+      type: "success"
     }
   }),
 
@@ -122,32 +123,45 @@ export default {
     send() {
       let url = this.contextMenusInfo.linkUrl || this.tabInfo.url;
 
-      API.sendData({
-        content: this.comment,
-        embeds: [
-          {
-            title: this.tabInfo.title,
-            description: this.contextMenusInfo.selectionText,
-            url,
-            thumbnail: {
-              url: this.tabInfo.favIconUrl,
-              width: 32,
-              height: 32
-            },
-            image: {
-              url: this.contentInfo.largestImageUrl
+      if (this.webhook) {
+        API.sendData({
+          content: this.comment,
+          embeds: [
+            {
+              title: this.tabInfo.title,
+              description: this.contextMenusInfo.selectionText,
+              url,
+              thumbnail: {
+                url: this.tabInfo.favIconUrl,
+                width: 32,
+                height: 32
+              },
+              image: {
+                url: this.contentInfo.largestImageUrl
+              }
             }
+          ]
+        }).then(
+          response => {
+            this.showAlert(response.status, "success");
+          },
+          error => {
+            this.showAlert(error.message, "error");
           }
-        ]
-      }).then(response => {
-        this.alert.value = response.status;
-
-        this.alert.model;
-      }, error => {});
+        );
+      } else {
+        this.showAlert('Select webhook first!', 'warning');
+      }
     },
 
-    alert(){
+    showAlert(message, type = "info") {
       this.alert.model = true;
+      this.alert.type = type;
+      this.alert.value = message;
+
+      setTimeout(() => {
+        this.alert.model = false;
+      }, 2000);
     }
   }
 };

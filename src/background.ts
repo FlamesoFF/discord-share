@@ -1,5 +1,11 @@
 import { IContentInfoMessage, IShareData } from "./types";
 
+declare global {
+    interface Window {
+        data: IShareData
+    }
+}
+
 class Background {
     constructor() {
         chrome.contextMenus.create({
@@ -22,16 +28,13 @@ class Background {
                             height: 400,
                             focused: true,
                         }, (createdWindow) => {
-                            Object.defineProperty(window, 'data', {
-                                value: <IShareData>{
-                                    contextMenusInfo: info,
-                                    tabInfo: tabs[0],
-                                    contentInfo: {
-                                        largestImageUrl: message.data.largestImageUrl
-                                    }
-                                },
-                                writable: false
-                            });
+                            window.data = <IShareData>{
+                                contextMenusInfo: info,
+                                tabInfo: tabs[0],
+                                contentInfo: {
+                                    largestImageUrl: message.data.largestImageUrl
+                                }
+                            }
                         });
                     });
                 });
