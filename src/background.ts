@@ -21,21 +21,26 @@ class Background {
                     chrome.tabs.sendMessage(tabs[0].id, {
                         type: 'contentInfo'
                     }, (message) => {
-                        chrome.windows.create({
-                            url: './share-window/share.html',
-                            type: 'panel',
-                            width: 600,
-                            height: 400,
-                            focused: true,
-                        }, (createdWindow) => {
-                            window.data = <IShareData>{
+                        try {
+                            const shareData: IShareData = {
                                 contextMenusInfo: info,
                                 tabInfo: tabs[0],
                                 contentInfo: {
                                     largestImageUrl: message.data.largestImageUrl
                                 }
-                            }
-                        });
+                            };
+
+                            chrome.windows.create({
+                                url: './share-window/share.html',
+                                type: 'panel',
+                                width: 400,
+                                height: 800,
+                                focused: true,
+                            }, (createdWindow) => {
+                                window.data = shareData;
+                            });
+                        }
+                        catch (error) { }
                     });
                 });
             }

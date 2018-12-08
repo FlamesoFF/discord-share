@@ -27,6 +27,7 @@
     "contextMenus",
     "tabs",
     "storage",
+    "webRequest",
 
     "https://discordapp.com/api/*"
   ],
