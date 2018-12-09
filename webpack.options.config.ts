@@ -1,13 +1,13 @@
 import * as path from "path";
 import * as webpack from "webpack";
-import * as CopyWebpackPlugin from "copy-webpack-plugin";
+import CopyWebpackPlugin from "copy-webpack-plugin";
 import {VueLoaderPlugin} from "vue-loader";
 
 const config: webpack.Configuration = {
     mode: 'development',
 
     entry: {
-        options: './src/options/options.js',
+        options: './src/options/index.ts',
     },
 
     output: {
@@ -21,9 +21,21 @@ const config: webpack.Configuration = {
 
     module: {
         rules: [
+
+
             {
-                test: /\.ts$/,
-                loader: 'ts-loader'
+                test: /\.tsx?$/,
+                exclude: /node_modules/,
+                use: [
+                    'babel-loader',
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            appendTsSuffixTo: [/\.vue$/],
+                            appendTsxSuffixTo: [/\.vue$/]
+                        }
+                    }
+                ]
             },
 
             {
@@ -33,7 +45,7 @@ const config: webpack.Configuration = {
 
             {
                 test: /\.vue?$/,
-                loader: 'vue-loader'
+                loader:'vue-loader'
             },
 
             {
@@ -60,16 +72,16 @@ const config: webpack.Configuration = {
     },
 
     resolve: {
-        extensions: ['.ts', '.js', '.vue'],
+        extensions: ['.ts','.tsx', '.js'],
         alias: {
-            vue: 'vue/dist/vue.js'
+            vue$: 'vue/dist/vue.esm.js'
         }
     },
 
     plugins: [
         new CopyWebpackPlugin([
             {
-                from: './src/options/options.html'
+                from: './src/options/index.html'
             }
         ]),
         new VueLoaderPlugin()

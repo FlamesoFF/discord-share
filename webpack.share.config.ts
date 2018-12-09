@@ -1,13 +1,13 @@
 import * as path from "path";
 import * as webpack from "webpack";
-import * as CopyWebpackPlugin from "copy-webpack-plugin";
+import CopyWebpackPlugin from "copy-webpack-plugin";
 import {VueLoaderPlugin} from "vue-loader";
 
 const config: webpack.Configuration = {
     mode: 'development',
 
     entry: {
-        share: './src/share-window/share.js'
+        share: './src/share-window/index.ts'
     },
 
     output: {
@@ -26,9 +26,20 @@ const config: webpack.Configuration = {
                 loader: 'babel-loader'
             },
 
+
             {
-                test: /\.ts$/,
-                loader: 'ts-loader'
+                test: /\.tsx?$/,
+                exclude: /node_modules/,
+                use: [
+                    'babel-loader',
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            appendTsSuffixTo: [/\.vue$/],
+                            appendTsxSuffixTo: [/\.vue$/]
+                        }
+                    }
+                ]
             },
 
             {
@@ -60,16 +71,16 @@ const config: webpack.Configuration = {
     },
 
     resolve: {
-        extensions: ['.ts', '.js', '.vue'],
+        extensions: ['.ts', '.tsx', '.js'],
         alias: {
-            vue: 'vue/dist/vue.js'
+            vue$: 'vue/dist/vue.esm.js'
         }
     },
 
     plugins: [
         new CopyWebpackPlugin([
             {
-                from: './src/share-window/share.html'
+                from: './src/share-window/index.html'
             }
         ]),
         new VueLoaderPlugin()

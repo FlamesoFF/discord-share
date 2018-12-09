@@ -1,0 +1,20 @@
+html, body {
+  margin: 0;
+  padding: 0;
+
+  .slot {
+    .url {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .headline {
+    text-shadow: 1px 1px 6px black;
+  }
+
+  .main-image {
+    overflow: visible;
+  }
+}

@@ -1,6 +1,6 @@
 import * as webpack from "webpack";
 import * as path from "path";
-import * as CopyWebpackPlugin from "copy-webpack-plugin";
+import CopyWebpackPlugin from "copy-webpack-plugin";
 
 const config: webpack.Configuration = {
     mode: 'development',

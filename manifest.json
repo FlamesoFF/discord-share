@@ -21,14 +21,16 @@
   },
   "options_ui": {
     "chrome_style": false,
-    "page": "options/options.html"
+    "page": "options/index.html"
   },
   "permissions": [
     "contextMenus",
     "tabs",
     "storage",
     "webRequest",
+    "identity",
 
+    "https://cdn.discordapp.com/*",
     "https://discordapp.com/api/*"
   ],
   "web_accessible_resources": [

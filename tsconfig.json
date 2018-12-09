@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es6",
+    "target": "es5",
     "moduleResolution": "node",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
@@ -11,12 +11,13 @@
     "baseUrl": "/",
     "removeComments": true,
     "alwaysStrict": true,
+    "esModuleInterop": true,
     "types": [
       "node",
       "chrome"
     ],
     "typeRoots": [
-      "node_modules/@types"
+      "/node_modules/@types"
     ],
     "lib": [
       "es5",
@@ -31,7 +32,7 @@
     "./src/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
+    "/node_modules",
     "**/*.spec.ts"
   ]
 }
