@@ -3,7 +3,8 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css';
 
 import Vue from 'vue';
 import { default as Vuetify } from "vuetify";
-import Options from './components/root/Root.vue';
+// @ts-ignore
+import Options from './components/root/Options.vue';
 
 Vue.use(Vuetify);
 

@@ -1,15 +1,15 @@
 import Component from "vue-class-component";
-import Vue from "vue";
 import API from '../../../api/api';
+import AppView from "../../../shared/AppView";
 
 @Component({})
-export default class Auth extends Vue {
+export default class Auth extends AppView {
 
-    beforeMount(){
+    beforeMount() {
         // check authorization
         API.checkAuthorization().then(async result => {
 
-            if(result){
+            if (result) {
                 this.$router.push('/share');
             }
 
@@ -32,9 +32,11 @@ export default class Auth extends Vue {
     async authorize() {
         try {
             const authorized = await API.authorize();
-            if(authorized){
+
+            if (authorized) {
                 this.$router.push('/share');
             }
+
         } catch (e) {
         }
     }

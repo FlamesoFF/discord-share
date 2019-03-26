@@ -1,12 +1,13 @@
-import API from "../../../api/api";
 import Component from "vue-class-component";
-import Vue from "vue";
+import AppView, {AlertTypes} from "../../../shared/AppView";
 
+/**
+ * todo: default webhook
+ * todo: default notification type
+ */
 
 @Component({})
-export default class Options extends Vue {
-    name: "Options";
-
+export default class Options extends AppView {
     inputName = "";
     inputUrl = "";
     webhooks = [];
@@ -15,10 +16,6 @@ export default class Options extends Vue {
     beforeMount() {
         this.loadWebhooks();
         this.$nextTick();
-
-        window.addEventListener('hashchange', (data) => {
-            console.log(data);
-        });
     }
 
 
@@ -80,12 +77,16 @@ export default class Options extends Vue {
         this.webhooks.splice(index, 1);
 
         chrome.storage.sync.set({webhooks: JSON.stringify(this.webhooks)}, () => {
+            this.showAlert('Deleted', AlertTypes.success);
             this.$nextTick();
         });
     }
 
     purgeWebhooks() {
-        chrome.storage.sync.remove(["webhooks"]);
+        chrome.storage.sync.remove(["webhooks"], () => {
+            this.showAlert('All webhooks deleted', AlertTypes.success);
+            this.$nextTick();
+        });
     }
 
     clear() {

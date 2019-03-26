@@ -17,4 +17,12 @@ html, body {
   .main-image {
     overflow: visible;
   }
+
+  .share- {
+    &quote-text {
+      white-space: pre-line;
+      max-height: 230px;
+      overflow-y: scroll;
+    }
+  }
 }

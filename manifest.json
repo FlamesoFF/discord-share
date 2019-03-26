@@ -17,7 +17,9 @@
     }
   ],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "background.js"
+    ]
   },
   "options_ui": {
     "chrome_style": false,
@@ -29,7 +31,6 @@
     "storage",
     "webRequest",
     "identity",
-
     "https://cdn.discordapp.com/*",
     "https://discordapp.com/api/*"
   ],

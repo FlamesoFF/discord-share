@@ -1,8 +1,8 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "es6",
     "module": "commonjs",
+    "target": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
@@ -34,7 +34,6 @@
   "exclude": [
     "/node_modules",
     "**/*.spec.ts",
-    "./src/share-window",
-    "./src/options"
+    "./src/share-window"
   ]
 }

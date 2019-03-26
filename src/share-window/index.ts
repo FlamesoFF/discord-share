@@ -4,8 +4,11 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css';
 import Vue from 'vue';
 import VueRouter from 'vue-router'
 import {default as Vuetify} from "vuetify";
+// @ts-ignore
 import Root from "./components/root/Root.vue";
+// @ts-ignore
 import Auth from "./components/auth/Auth.vue";
+// @ts-ignore
 import Share from "./components/share/Share.vue";
 import {IShareData} from "../types/globals";
 
@@ -23,7 +26,6 @@ chrome.runtime.getBackgroundPage((bgPage: IBackgroundPage) => {
     getSharedData = () => {
         return bgPage['shareData'];
     };
-    console.log(getSharedData());
 
     new Vue({
         el: '#root',

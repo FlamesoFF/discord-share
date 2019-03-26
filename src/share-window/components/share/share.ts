@@ -1,10 +1,11 @@
-import Vue from "vue";
 import Component from "vue-class-component";
 import API from "../../../api/api";
 import {getSharedData} from "../../index";
+import {IShareData} from "../../../types/globals";
+import AppView, {AlertTypes} from "../../../shared/AppView";
 
 @Component({})
-export default class Share extends Vue {
+export default class Share extends AppView {
     post = {
         model: undefined,
         list: [
@@ -30,12 +31,6 @@ export default class Share extends Vue {
     imageIndex = 0;
     imageUrl = "";
     customImageUrl = "";
-    alert = {
-        model: null,
-        active: false,
-        value: "",
-        type: "success"
-    };
     user = {
         id: "",
         username: "",
@@ -48,22 +43,16 @@ export default class Share extends Vue {
     };
 
 
-    get contextMenusInfo() {
-        if (getSharedData()) {
-            return getSharedData().contextMenusInfo;
-        }
+    get contextMenusInfo(): IShareData['contextMenusInfo'] {
+        return getSharedData().contextMenusInfo;
     }
 
-    get tabInfo() {
-        if (getSharedData()) {
-            return getSharedData().tabInfo;
-        }
+    get tabInfo(): IShareData['tabInfo'] {
+        return getSharedData().tabInfo;
     }
 
-    get contentInfo() {
-        if (getSharedData()) {
-            return getSharedData().contentInfo;
-        }
+    get contentInfo(): IShareData['contentInfo'] {
+        return getSharedData().contentInfo;
     }
 
     get postType() {
@@ -89,22 +78,8 @@ export default class Share extends Vue {
         this.preloadData();
 
         try {
-            this.imageUrl = getSharedData().contentInfo.imagesUrls[this.imageIndex];
-        }
-        catch (e) {}
-    }
-
-    async preloadData() {
-        try {
-            this.guild.list = await API.getUserGuilds();
-        } catch (error) {
-            console.error(error);
-        }
-
-        try {
-            this.user = await API.getUserData();
-        } catch (error) {
-            console.error(error);
+            this.imageUrl = this.contentInfo.imagesUrls[this.imageIndex];
+        } catch (e) {
         }
     }
 
@@ -112,12 +87,14 @@ export default class Share extends Vue {
         let url = this.contextMenusInfo.linkUrl || this.tabInfo.url;
 
         if (this.webhook.model) {
+            let content: string;
+
             if (this.notify && this.notify !== "none") {
-                this.comment = `${this.notify} ${this.comment}`;
+                content = `${this.notify} ${this.comment}`;
             }
 
             API.sendData(this.webhook.model.url, {
-                content: this.comment,
+                content,
                 embeds: [
                     {
                         title: this.tabInfo.title,
@@ -130,29 +107,17 @@ export default class Share extends Vue {
                 ]
             }).then(
                 response => {
-                    this.showAlert(response.status, "success", () => {
+                    this.showAlert('Successfully shared!', AlertTypes.success, () => {
                         this.closeWindow();
                     });
                 },
                 error => {
-                    this.showAlert(error.message, "error");
+                    this.showAlert('Unable to share. Check your webhooks list!', AlertTypes.error);
                 }
             );
         } else {
-            this.showAlert("Select webhook first!", "warning");
+            this.showAlert("Select webhook first!", AlertTypes.warning);
         }
-    }
-
-    showAlert(message, type = "info", callback = () => {
-    }) {
-        this.alert.model = true;
-        this.alert.type = type;
-        this.alert.value = message;
-
-        setTimeout(() => {
-            this.alert.model = false;
-            callback();
-        }, 2000);
     }
 
     closeWindow() {
@@ -176,6 +141,31 @@ export default class Share extends Vue {
         ) {
             this.imageUrl = this.contentInfo.imagesUrls[this.imageIndex - 1];
             this.imageIndex--;
+        }
+    }
+
+    validateQuoteText(str: string): string {
+        if (str && str.length > 2000) {
+            this.showAlert('Max quote length: 2000 symbols!', AlertTypes.error);
+
+            return str.slice(0, 2000);
+        }
+
+        return str;
+    }
+
+    // async
+    async preloadData() {
+        try {
+            this.guild.list = await API.getUserGuilds();
+        } catch (error) {
+            console.error(error);
+        }
+
+        try {
+            this.user = await API.getUserData();
+        } catch (error) {
+            console.error(error);
         }
     }
 

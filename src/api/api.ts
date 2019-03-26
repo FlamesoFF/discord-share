@@ -1,4 +1,4 @@
-import axios, {AxiosPromise} from 'axios';
+import axios, { AxiosPromise } from 'axios';
 import {
     IDiscordBotAuthorization,
     IDiscordGuild,
@@ -17,11 +17,12 @@ class AppAPI {
     private readonly clientSecret = 'x-eqwaz5Ty0OFusoWm5iwgHJPSi6CC_3';
     private readonly baseUrl = 'https://discordapp.com/api';
     private readonly botToken = 'NTIwMjIwNjY4MzkwOTMyNTAz.Du6KRw.uAd9Rw0kxrVzUEnN_aNyFBe0B7c';
+    private readonly REDIRECT_URI = `${chrome.identity.getRedirectURL()}auth`;
 
 
     constructor() {
         chrome.storage.sync.get([STORAGE.token], (data) => {
-            const {authToken} = data;
+            const { authToken } = data;
 
             if (authToken) {
                 this.setDefualtHeaders(authToken);
@@ -30,23 +31,34 @@ class AppAPI {
     }
 
     async authorize() {
-
         //let code: string;
         let token: string;
 
+        return new Promise((resolve, reject) => {
+
+            chrome.identity.launchWebAuthFlow({
+                interactive: !0,
+                url: 'https://discordapp.com/api/oauth2/authorize?client_id=520220668390932503&response_type=token&scope=identify+guilds'
+            }, async result => {
+                console.log(result);
+
+                const token = this.parseToken(result);
+
+                await this.saveToken(token);
+
+                resolve(result);
+            })
+
+        });
         // try {
         //     code = await this.getAuthorizationCode();
         // } catch (e) {
         // }
 
-        try {
-            token = await this.getAuthorizationToken();
-        } catch (e) {
-        }
+        // token = await this.getAuthorizationToken();
 
         //if (token && code) {
         // this.setDefualtHeaders(token);
-        await this.saveToken(token);
         //await this.saveCode(code);
         return true;
         // } else {
@@ -58,53 +70,50 @@ class AppAPI {
         const params = new URLSearchParams();
 
         params.set('client_id', this.clientID);
-        params.set('redirect_uri', chrome.identity.getRedirectURL());
+        params.set('redirect_uri', this.REDIRECT_URI);
         params.set('response_type', 'token');
         params.set('scope', 'identify guilds');
 
         const url = `${this.baseUrl}/oauth2/authorize?${params.toString()}`;
 
         return new Promise<string>((resolve, reject) => {
-            try {
-                chrome.identity.launchWebAuthFlow({
-                    interactive: true,
-                    url
-                }, async response => {
-                    let code = response.match(/\?code=(.+)$/i)[1];
+            chrome.identity.launchWebAuthFlow({
+                interactive: true,
+                url
+            }, response => {
+                let code;
 
-                    resolve(code);
-                });
-            } catch (error) {
-                console.error(error);
-                reject();
-            }
+                try {
+                    code = response.match(/\?code=(.+)$/i)[1];
+                }
+                catch (error) {
+                    throw 'Unable to parse code.';
+                }
+
+                resolve(code);
+            });
         });
     }
 
     private async getAuthorizationToken(): Promise<string> {
         const params = new URLSearchParams();
 
+        console.log(this.REDIRECT_URI);
+
         params.set('client_id', this.clientID);
-        // params.set('redirect_uri', chrome.identity.getRedirectURL());
+        //params.set('redirect_uri', this.REDIRECT_URI);
         params.set('response_type', 'token');
         params.set('scope', 'identify guilds');
 
-        const url = `${this.baseUrl}/oauth2/authorize?${params.toString()}`;
-
         return new Promise<string>((resolve, reject) => {
-            try {
-                chrome.identity.launchWebAuthFlow({
-                    interactive: true,
-                    url
-                }, async response => {
-                    let token = response.match(/#access_token=([\d\w]+)\&.+$/i)[1];
+            const url = `${this.baseUrl}/oauth2/authorize?${params.toString()}`;
 
-                    resolve(token);
-                });
-            } catch (error) {
-                console.error(error);
-                reject();
-            }
+            chrome.identity.launchWebAuthFlow({
+                interactive: true,
+                url: url
+            }, function (response) {
+                this.parseToken(response);
+            });
         });
 
         // return axios.get(url).then(response => {
@@ -114,20 +123,33 @@ class AppAPI {
         // });
     }
 
+    private parseToken(string: string): string {
+        let token;
+
+        try {
+            token = string.match(/#access_token=([\d\w]+)\&.+$/i)[1];
+        }
+        catch (error) {
+            throw 'Unable to parse token.';
+        }
+
+        return token;
+    }
+
     async logOut() {
         return new Promise((resolve, reject) => {
             chrome.storage.sync.get([STORAGE.token], async (data) => {
-                const {authToken} = data;
+                const { authToken } = data;
                 const url = `${this.baseUrl}/oauth2/token/revoke?token=${authToken}`;
 
                 const result = await axios.get(url);
 
                 if (result) {
                     const authRemoved = this.removeAuth();
-                    if(authRemoved ) {
+                    if (authRemoved) {
                         resolve();
                     }
-                    else{
+                    else {
                         reject();
                     }
                 }

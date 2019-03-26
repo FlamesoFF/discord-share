@@ -22,6 +22,7 @@ class Background {
                                     contextMenusInfo: info,
                                     tabInfo: tabs[0],
                                     contentInfo: {
+                                        text: message.data.text,
                                         imagesUrls: message.data.imagesUrls
                                     }
                                 };
@@ -41,6 +42,24 @@ class Background {
                     });
                 }
             });
+        });
+
+        // Check on first launch
+        chrome.runtime.onInstalled.addListener(details => {
+            if (details.reason == 'install' || details.reason == 'update') {
+                this.checkWebhooks();
+            }
+        });
+    }
+
+    private checkWebhooks() {
+        // Check webhooks
+        chrome.storage.sync.get(["webhooks"], data => {
+            const list = JSON.parse(data.webhooks || '[]');
+
+            if (!list || (list && !list.length)) {
+                chrome.tabs.create({'url': 'chrome://extensions/?options=' + chrome.runtime.id});
+            }
         });
     }
 }
