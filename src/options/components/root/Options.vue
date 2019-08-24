@@ -46,7 +46,7 @@
 
                     <v-list two-line>
                         <template v-for="(item, index) in webhooks">
-                            <v-layout align-center justify-space-between row fill-height>
+                            <v-layout align-center justify-space-between row fill-height v-bind:key="index">
                                 <v-subheader v-if="item.title" :key="item.title">{{ item.title }}</v-subheader>
 
                                 <v-divider v-else-if="item.divider" :inset="item.inset" :key="index"></v-divider>

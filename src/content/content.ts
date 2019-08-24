@@ -1,4 +1,5 @@
-import {IContentInfoMessage} from "./types/globals";
+import { IContentInfoMessage } from './../types';
+
 
 class Content {
     constructor() {
@@ -9,7 +10,7 @@ class Content {
 
                 sendResponse(<IContentInfoMessage>{
                     type: 'contentInfo',
-                    data:{
+                    data: {
                         text,
                         imagesUrls
                     }
@@ -53,7 +54,7 @@ class Content {
         const text = document.getSelection().toString();
 
         if (text) {
-            const formatted = text.replace(/[\n]+/g, '\n\n')
+            const formatted = text.replace(/[\n]+/g, '\n\n');
 
             return formatted ? formatted : '';
         }

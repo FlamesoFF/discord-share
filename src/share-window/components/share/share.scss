@@ -1,6 +1,7 @@
 html, body {
   margin: 0;
   padding: 0;
+  overflow: auto;
 
   .slot {
     .url {
@@ -24,5 +25,9 @@ html, body {
       max-height: 230px;
       overflow-y: scroll;
     }
+  }
+
+  iframe {
+    border: 0;
   }
 }

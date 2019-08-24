@@ -3,15 +3,12 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css';
 
 import Vue from 'vue';
 import { default as Vuetify } from "vuetify";
-// @ts-ignore
-import Options from './components/root/Options.vue';
+import Options from './components/root/options';
 
 Vue.use(Vuetify);
 
 new Vue({
     el: '#app',
-
-    template: '</Options>',
-
+    template: '<Options/>',
     render: h => h(Options)
 });

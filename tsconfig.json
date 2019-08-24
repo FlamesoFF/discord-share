@@ -1,40 +1,54 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "es6",
     "module": "commonjs",
+    "target": "es6",
     "moduleResolution": "node",
+    "noImplicitThis": true,
     "sourceMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "noEmit": false,
-    "baseUrl": "/",
+    "allowSyntheticDefaultImports": true,
     "removeComments": true,
     "alwaysStrict": true,
     "esModuleInterop": true,
+    "rootDir": "./src",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
+      ]
+    },
     "types": [
       "node",
-      "chrome"
+      "chrome",
+      "vue"
     ],
     "typeRoots": [
-      "/node_modules/@types"
+      "./node_modules/@types"
     ],
     "lib": [
       "es5",
+      "es6",
       "es2015",
       "es2016",
       "es2017",
+      "es2018",
       "dom"
     ],
     "outDir": "dist"
   },
+  "files": [
+    "./src/global.d.ts"
+  ],
   "include": [
-    "./src/**/*.ts"
+    "./src/**/*"
   ],
   "exclude": [
-    "/node_modules",
-    "**/*.spec.ts",
-    "./src/share-window",
-    "./src/options"
+    "./node_modules"
   ]
 }

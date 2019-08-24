@@ -1,5 +1,5 @@
+import { AlertTypes, AppView } from '@/shared/AppView';
 import Component from "vue-class-component";
-import AppView, {AlertTypes} from "../../../shared/AppView";
 
 /**
  * todo: default webhook
@@ -12,12 +12,10 @@ export default class Options extends AppView {
     inputUrl = "";
     webhooks = [];
 
-
     beforeMount() {
         this.loadWebhooks();
         this.$nextTick();
     }
-
 
     loadWebhooks() {
         chrome.storage.sync.get(["webhooks"], data => {
@@ -26,7 +24,6 @@ export default class Options extends AppView {
             }
         });
     }
-
 
     updated() {
         this.loadWebhooks();

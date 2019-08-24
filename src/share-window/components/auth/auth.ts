@@ -1,43 +1,21 @@
+import { appApi } from '@/api/api';
+import { AppView } from '@/shared/AppView';
 import Component from "vue-class-component";
-import API from '../../../api/api';
-import AppView from "../../../shared/AppView";
+import { $storeAuth } from '@/share-window/store/store.auth';
 
 @Component({})
 export default class Auth extends AppView {
+    progress = false;
 
     beforeMount() {
-        // check authorization
-        API.checkAuthorization().then(async result => {
-
-            if (result) {
-                this.$router.push('/share');
-            }
-
-            // try {
-            //     await API.getGuild();
-            // } catch (error) {
-            //     console.error(error);
-            // }
-            //
-            // try {
-            //     await API.getGuildWebhooks();
-            // } catch (error) {
-            //     console.error(error);
-            // }
-
-            this.$nextTick();
-        });
     }
 
     async authorize() {
-        try {
-            const authorized = await API.authorize();
+        this.progress = true;
 
-            if (authorized) {
-                this.$router.push('/share');
-            }
-
-        } catch (e) {
-        }
+        $storeAuth.dispatch('').then(() => {
+            this.$router.push('/share');
+            this.progress = false;
+        });
     }
 }

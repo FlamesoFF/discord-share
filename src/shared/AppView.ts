@@ -1,4 +1,4 @@
-import Vue from "vue/";
+import Vue from "vue";
 
 export enum AlertTypes {
     success = 'success',
@@ -7,7 +7,7 @@ export enum AlertTypes {
     error = 'error',
 }
 
-export default class AppView extends Vue {
+export class AppView extends Vue {
     alert = {
         model: null,
         active: false,

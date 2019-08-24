@@ -1,58 +1,112 @@
+import { $storeApp } from '@/share-window/store/store.app';
+import { $storeAuth } from '@/share-window/store/store.auth';
+import { $storeShare } from '@/share-window/store/store.share';
+import { AppView } from '@/shared/AppView';
+import { Utils } from '@/shared/Utils';
+import { App, Discord } from '@/types';
 import Component from "vue-class-component";
-import API from "../../../api/api";
-import {getSharedData} from "../../index";
-import {IShareData} from "../../../types/globals";
-import AppView, {AlertTypes} from "../../../shared/AppView";
+import { AlertTypes } from './../../../shared/AppView';
+import ShareImage from './share-image/share-image.vue';
+import ShareTitle from './title/share-title.vue';
+import { $storeShareImage } from '@/share-window/store/store.share.image';
+import { mapGetters } from 'vuex';
 
-@Component({})
+
+interface ISelect<T> {
+    model: T
+    list: T[]
+}
+
+@Component({
+    components: {
+        'share-title': ShareTitle,
+        'share-image': ShareImage,
+    }
+})
 export default class Share extends AppView {
     post = {
         model: undefined,
         list: [
-            {id: 0, value: 'Through webhook'},
-            {id: 1, value: 'As bot'},
+            { id: 0, value: 'Through webhook' },
+            { id: 1, value: 'As bot' },
         ],
     };
-    webhook = {
-        model: null,
-        list: []
-    };
-    guild = {
-        model: null,
-        list: []
-    };
-    channel = {
-        model: null,
-        list: []
-    };
-    comment = "";
-    notify = null;
-    notificationTypes = ["@everyone", "@here", "none"];
-    imageIndex = 0;
-    imageUrl = "";
-    customImageUrl = "";
-    user = {
-        id: "",
-        username: "",
-        discriminator: "",
-        avatar: "",
-        verified: null,
-        email: "",
-        flags: null,
-        premium_type: null
-    };
 
-
-    get contextMenusInfo(): IShareData['contextMenusInfo'] {
-        return getSharedData().contextMenusInfo;
+    set webhook(value: string) {
+        $storeShare.commit('webhook', value);
+    }
+    get webhook() {
+        return $storeShare.getters.form.webhook;
+    }
+    get webhooks() {
+        return $storeApp.getters.webhooks;
     }
 
-    get tabInfo(): IShareData['tabInfo'] {
-        return getSharedData().tabInfo;
+    set guild(value: Discord.IGuild) {
+        $storeShare.commit('guild', value);
+    }
+    get guild() {
+        return $storeShare.getters.form.guild;
+    }
+    get guilds() {
+        return $storeApp.getters.guilds;
     }
 
-    get contentInfo(): IShareData['contentInfo'] {
-        return getSharedData().contentInfo;
+    set channel(value: Discord.IGuildTextChannel | Discord.IGuildVoiceChannel) {
+        $storeShare.commit('channel', value);
+    }
+    get channel() {
+        return $storeShare.getters.form.channel;
+    }
+    get channels() {
+        return $storeApp.getters.channels;
+    }
+
+    set notification(value: string) {
+        $storeShare.commit('notification', value);
+    }
+    get notification() {
+        return $storeShare.getters.form.notification;
+    }
+    get notifications() {
+        return $storeApp.getters.notifications;
+    }
+
+    set videoUrl(url: string) {
+        $storeShare.commit('videoUrl', url);
+    }
+    get videoUrl() {
+        return $storeShare.getters.form.videoUrl;
+    }
+
+    set linkUrl(url: string) {
+        $storeShare.commit('linkUrl', url);
+    }
+    get linkUrl() {
+        return $storeShare.getters.form.videoUrl;
+    }
+
+    set quote(quote: string) {
+        $storeShare.commit('quote', quote);
+    }
+    get quote() {
+        return $storeShare.getters.form.quote;
+    }
+
+    set comment(comment: string) {
+        $storeShare.commit('comment', comment);
+    }
+    get comment() {
+        return $storeShare.getters.form.comment;
+    }
+
+
+    set customImageUrl(value: string) {
+        $storeShare.commit('setCustomImageUrl', value);
+        $storeShare.commit('setActiveImageUrl', value);
+    };
+    get customImageUrl() {
+        return $storeShareImage.getters.customImageUrl;
     }
 
     get postType() {
@@ -64,119 +118,63 @@ export default class Share extends AppView {
 
     }
 
-    beforeMount() {
-        // load webhooks
-        chrome.storage.sync.get(["webhooks"], data => {
-            if (data.webhooks) {
-                this.webhook.list = JSON.parse(data.webhooks);
-                this.webhook.model = this.webhook.list[0];
-
-                this.$nextTick();
-            }
-        });
-
-        this.preloadData();
-
-        try {
-            this.imageUrl = this.contentInfo.imagesUrls[this.imageIndex];
-        } catch (e) {
-        }
+    set parsedVideoUrl(value: string) {
+        $storeShare.commit('setVideoUrl', value);
+    }
+    get parsedVideoUrl() {
+        return $storeShare.getters.parsedVideoUrl;
     }
 
-    send() {
-        let url = this.contextMenusInfo.linkUrl || this.tabInfo.url;
+    set description(text: string) {
+        $storeShare.commit('setDescription', text);
+    }
+    get description(): string {
+        return $storeShare.getters.description;
+    }
 
-        if (this.webhook.model) {
-            let content: string;
+    // Computed properties
+    beforeMount() {
+        // load webhooks
+        $storeApp.dispatch('fetchWebhooks');
+        $storeApp.dispatch('fetchGuilds');
 
-            if (this.notify && this.notify !== "none") {
-                content = `${this.notify} ${this.comment}`;
+        const shareData: IShareData = $storeApp.getters.shareData;
+        const {
+            contentInfo: {
+                text : quote
+            },
+            tabInfo: {
+
             }
+         } = shareData;
 
-            API.sendData(this.webhook.model.url, {
-                content,
-                embeds: [
-                    {
-                        title: this.tabInfo.title,
-                        description: this.contextMenusInfo.selectionText,
-                        url,
-                        image: {
-                            url: this.customImageUrl || this.imageUrl
-                        }
-                    }
-                ]
-            }).then(
-                response => {
-                    this.showAlert('Successfully shared!', AlertTypes.success, () => {
-                        this.closeWindow();
-                    });
-                },
-                error => {
-                    this.showAlert('Unable to share. Check your webhooks list!', AlertTypes.error);
-                }
-            );
-        } else {
-            this.showAlert("Select webhook first!", AlertTypes.warning);
-        }
+        this.quote = quote;       
+    }
+
+
+    parseServerIconUri(uri: string) {
+        return Utils.getDiscordIconUrl(uri);
+    }
+
+
+    async send() {
+        const response = await $storeShare.dispatch('sendMessageToDiscord')
+            .catch(error => {
+                this.showAlert(error, AlertTypes.error);
+            });
+
+        this.showAlert('Successfully shared!', AlertTypes.success, () => {
+            this.closeWindow();
+        });
     }
 
     closeWindow() {
         window.close();
     }
 
-    nextImage() {
-        if (
-            this.contentInfo.imagesUrls &&
-            this.contentInfo.imagesUrls[this.imageIndex + 1]
-        ) {
-            this.imageUrl = this.contentInfo.imagesUrls[this.imageIndex + 1];
-            this.imageIndex++;
-        }
-    }
-
-    prevImage() {
-        if (
-            this.contentInfo.imagesUrls &&
-            this.contentInfo.imagesUrls[this.imageIndex - 1]
-        ) {
-            this.imageUrl = this.contentInfo.imagesUrls[this.imageIndex - 1];
-            this.imageIndex--;
-        }
-    }
-
-    validateQuoteText(str: string): string {
-        if (str && str.length > 2000) {
-            this.showAlert('Max quote length: 2000 symbols!', AlertTypes.error);
-
-            return str.slice(0, 2000);
-        }
-
-        return str;
-    }
-
-    // async
-    async preloadData() {
-        try {
-            this.guild.list = await API.getUserGuilds();
-        } catch (error) {
-            console.error(error);
-        }
-
-        try {
-            this.user = await API.getUserData();
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
     async logOut() {
-        await API.logOut();
-
-        this.$router.push('/auth');
+        $storeAuth.dispatch('logOut').then(() => {
+            this.$router.push('/auth');
+        });
     }
-
-    async loadGuildChannels(id) {
-        this.channel.list = await API.getGuildChannels(id);
-    }
-
 };

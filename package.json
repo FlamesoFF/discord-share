@@ -1,21 +1,20 @@
 {
   "name": "discord-share",
-  "version": "1.0.0",
+  "version": "0.9.0",
   "description": "Share web content to Discord!",
   "main": "index.js",
   "scripts": {
-    "dev-build-all": "cross-env NODE_ENV=development webpack --config webpack.config.ts --progress",
-    "prod-build-all": "cross-env NODE_ENV=production webpack --config webpack.config.ts --progress",
-    "prod-build": "webpack --config webpack.config.ts --env.production --progress",
-    "prod-build-share": "webpack --config webpack.share.config.ts --env.production --progress",
-    "prod-build-options": "webpack --config webpack.options.config.ts --env.production --progress"
+    "dev-build": "webpack --config webpack.dev.config.ts --progress",
+    "prod-build": "webpack --config webpack.prod.config.ts --progress"
   },
-  "author": "Artem \"flamesoff\" Kopchinsky",
+  "author": "Artem \"flamesoff\" Kopchinskiy",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.2.0",
     "@types/axios": "^0.14.0",
-    "@types/chrome": "^0.0.75",
+    "@types/chrome": "^0.0.83",
+    "@types/copy-webpack-plugin": "^5.0.0",
+    "@types/html-webpack-plugin": "^3.2.0",
     "@types/node": "^10.12.12",
     "@types/terser": "^3.8.0",
     "@types/webpack": "^4.4.20",
@@ -25,30 +24,33 @@
     "css-loader": "^2.0.0",
     "file-loader": "^2.0.0",
     "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
     "image-webpack-loader": "^4.6.0",
     "node-sass": "^4.11.0",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "terser-webpack-plugin": "^1.1.0",
     "ts-loader": "^5.3.1",
-    "ts-node": "^7.0.1",
-    "tsconfig-paths": "^3.7.0",
+    "ts-node": "^8.1.0",
+    "tsconfig-paths": "^3.8.0",
     "tsconfig-paths-webpack-plugin": "^3.2.0",
-    "typescript": "^3.2.1",
+    "typescript": "^3.4.5",
     "typescript-register": "^1.1.0",
     "uglifyjs-webpack-plugin": "^2.0.1",
-    "vue-loader": "^15.4.2",
+    "vue-loader": "^15.7.0",
     "vue-style-loader": "^4.1.2",
-    "vue-template-compiler": "^2.5.17",
+    "vue-template-compiler": "^2.6.10",
     "webpack": "^4.27.1",
-    "webpack-cli": "^3.1.2"
+    "webpack-cli": "^3.1.2",
+    "webpack-merge": "^4.2.1"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "material-design-icons-iconfont": "^4.0.3",
-    "vue": "^2.5.17",
-    "vue-class-component": "^6.3.2",
-    "vue-router": "^3.0.2",
-    "vuetify": "^1.3.12"
+    "vue": "^2.6.10",
+    "vue-class-component": "^7.1.0",
+    "vue-router": "^3.0.6",
+    "vuetify": "^1.5.14",
+    "vuex": "^3.1.1"
   }
 }
