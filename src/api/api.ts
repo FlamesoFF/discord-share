@@ -1,6 +1,6 @@
 import { API } from '@/shared/constants';
 import axios, { AxiosPromise } from 'axios';
-import { DiscordMessage } from '../models/DiscordMessage';
+import { DiscordMessage } from '@/models/DiscordMessage';
 import { Discord } from '@/types';
 
 enum STORAGE {

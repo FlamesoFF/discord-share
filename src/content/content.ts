@@ -1,4 +1,4 @@
-import { IContentInfoMessage } from './../types';
+import { IContentInfoMessage } from '@/types';
 
 
 class Content {

@@ -1,5 +1,6 @@
 import { IEmbed, IEmbedProvider, IEmbedProxy, IMessage, IEmbedData } from "@/types";
-import {Utils} from "../shared/Utils";
+import {Utils} from "@shared/Utils";
+
 
 export class DiscordMessage implements IMessage {
     content: string

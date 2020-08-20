@@ -1,17 +1,14 @@
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import { default as Vuetify } from "vuetify";
+import {default as Vuetify} from "vuetify";
 import 'vuetify/dist/vuetify.min.css';
-import Vuex from 'vuex';
-import { Utils } from "../shared/Utils";
-import Auth from './components/auth/auth.vue';
+import {Utils} from "@shared/Utils";
 import Root from './components/root/root.vue';
-import Share from './components/share/share.vue';
+import {router} from "@/share-window/router";
 
 Vue.use(VueRouter);
 Vue.use(Vuetify);
-Vue.use(Vuex);
 
 Utils.ready().then(() => {
     new Vue({
@@ -19,12 +16,7 @@ Utils.ready().then(() => {
         // template: '<Root/>',
         render: h => h(Root),
 
-        router: new VueRouter({
-            routes: [
-                { path: '/auth', component: Auth },
-                { path: '/share', component: Share }
-            ] // short for `routes: routes`
-        }),
+        router,
 
         beforeCreate() {
             this.$router.push('/auth');
